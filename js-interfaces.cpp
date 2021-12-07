@@ -1,4 +1,4 @@
-#include "js-update-interfaces.h"
+#include "js-interfaces.h"
 
 #include <cstdio>
 #include <cstdlib>
