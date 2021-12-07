@@ -1,4 +1,4 @@
-#include "js-interfaces.h"
+#include "js-update-interfaces.h"
 
 #include <cstdio>
 #include <cstdlib>
@@ -22,9 +22,32 @@ void set_param(Model model, char* arg, char* value) {
     XGBoosterSetParam(*(model->first), arg, value);
 }
 
+void update_model(Model model, int iteration) {
+    XGBoosterUpdateOneIter(*(model->first), iteration, *(model->second));
+}
+
+void update_callback(Model model, int iteration, char* callback, int step) {
+    update_model(model, iteration);
+    if(step > 0 && iteration % step == 0) {
+        emscripten_run_script(callback);
+    }
+}
+
+void train_callback(Model model, int iterations, char* callback, int step) {
+    for(int i = 0; i < iterations; ++i) {
+        update_callback(model, i, callback, step);
+    }
+}
+
+void train_progress(Model model, int iterations, int step) {
+    for(int i = 0; i < iterations; ++i) {
+        update_callback(model, i, "if (typeof progress == 'function') progress();", step);
+    }
+}
+
 void train_full_model(Model model, int iterations) {
-    for (int i = 0; i < iterations; ++i) {
-        XGBoosterUpdateOneIter(*(model->first), i, *(model->second));
+    for(int i = 0; i < iterations; ++i) {
+        update_model(model, i);
     }
 }
 
@@ -41,12 +64,6 @@ long predict_one(Model model, float* dataset, int dimensions, float* prediction)
 
     const float* output = nullptr;
     bst_ulong out_len = prediction_size(model, dataset, dimensions, &output);
-/*
-    DMatrixHandle h_test;
-    XGDMatrixCreateFromMat(dataset, 1, dimensions, -1, &h_test);
-    bst_ulong out_len;
-    const float* output;
-    XGBoosterPredict(*(model->first), h_test, 0, 0, &out_len, &output);*/
 
     for(bst_ulong i = 0; i < out_len; ++i) {
         prediction[i] = output[i];

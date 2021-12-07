@@ -13,6 +13,10 @@ extern "C" {
 
 Model create_model(float* dataset, float* labels, int rows, int cols);
 void set_param(Model model, char* arg, char* value);
+void update_model(Model model, int iteration);
+void update_callback(Model model, int iteration, char* callback, int step);
+void train_callback(Model model, int iterations, char* callback, int step);
+void train_progress(Model model, int iterations, int step);
 void train_full_model(Model model, int iterations);
 long predict_one(Model model, float* dataset, int dimensions, float* prediction);
 long prediction_size(Model model, float* dataset, int dimensions, const float** output);
