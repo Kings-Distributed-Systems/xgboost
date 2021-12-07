@@ -36,7 +36,7 @@ replace:
 build:
 	cd xgboost; make -j4 config=../make/minimum.mk; cd ..;
 	mkdir -p $(BUILD_DIR)/wasm;
-	$(CXX) $(CFLAGS) js-interfaces.cpp $(COMPILED_FILES) -o $(BUILD_DIR)/wasm/xgboost.js --pre-js src/wasmPreJS.js -s WASM=1 -s EXPORTED_FUNCTIONS=$(EXPORTED_FUNCTIONS) -s EXPORTED_RUNTIME_METHODS=$(EXPORTED_RUNTIME_FUNCTIONS)
+	$(CXX) $(CFLAGS) js-interfaces.cpp $(COMPILED_FILES) -o $(BUILD_DIR)/wasm/xgboost.js --pre-js src/wasmPreJS.js -s WASM=1 -s EXPORTED_FUNCTIONS=$(EXPORTED_FUNCTIONS)
 
 clean:
 	cd xgboost; make clean_all; cd ..; rm -rf dist;
